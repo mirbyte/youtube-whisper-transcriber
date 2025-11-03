@@ -5,6 +5,9 @@ A powerful Python tool for transcribing YouTube videos to text using OpenAI's Wh
 [Video Demo](https://www.youtube.com/watch?v=VQk_CA9RRCo)
 
 
+this script still lacks proper testing but i thought ill just put it out there for now
+
+
 ## Requirements
 
 ### System Requirements

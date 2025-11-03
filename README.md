@@ -10,6 +10,7 @@ A powerful Python tool for transcribing YouTube videos to text using OpenAI's Wh
 ### System Requirements
 
 - **Python 3.8+**
+- **Minimum 4GB of disk space**
 - **Minimum 4GB RAM** (8GB+ recommended for optimal performance)
 - **GPU support** optional but recommended (CUDA for NVIDIA GPUs)
 

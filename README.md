@@ -2,6 +2,7 @@
 
 A powerful Python tool for transcribing YouTube videos to text using OpenAI's Whisper large-v3 model. Features universal language support, multiple output formats and SponsorBlock integration. *Create YouTube video summaries completely for free!*
 
+[Video Demo](https://www.youtube.com/watch?v=VQk_CA9RRCo)
 
 
 ## Requirements

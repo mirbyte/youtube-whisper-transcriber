@@ -1,115 +1,110 @@
-
 # YouTube Whisper Transcriber
 
-A powerful Python tool for transcribing YouTube videos to text using OpenAI's Whisper model. Features automatic language detection, multiple output formats, and intelligent system resource management.
+A powerful Python tool for transcribing YouTube videos to text using OpenAI's Whisper large-v3 model. Features universal language support, multiple output formats and SponsorBlock integration. *Create YouTube video summaries completely for free!*
 
-## Features
 
-- **Universal Language Support** - Auto-detect or specify from dozens of languages
-- **Multiple Output Formats** - Text with timestamps, plain text, JSON, and SRT subtitles
-- **Smart Resource Management** - Automatically optimizes settings based on available RAM and CPU
-- **Resume Capability** - Session management allows resuming interrupted transcriptions
-- **Progress Tracking** - Real-time progress monitoring with ETA calculations
-- **Memory Monitoring** - Prevents system overload with intelligent memory usage tracking
-- **Audio Validation** - Comprehensive audio file validation and quality checks
 
 ## Requirements
 
 ### System Requirements
+
 - **Python 3.8+**
-- **Minimum 4GB RAM** (8GB+ recommended)
-- **GPU support** optional but recommended for faster processing
+- **Minimum 4GB RAM** (8GB+ recommended for optimal performance)
+- **GPU support** optional but recommended (CUDA for NVIDIA GPUs)
+
 
 ### Dependencies
-```
 
+```bash
 pip install yt-dlp faster-whisper colorama tqdm psutil librosa torch
-
 ```
 
-## Installation
+*Update yt-dlp regularly!*
 
-1. Clone the repository:
-```
-
-git clone https://github.com/yourusername/youtube-whisper-transcriber.git
-cd youtube-whisper-transcriber
-
-```
-
-2. Install dependencies:
-```
-
-pip install -r requirements.txt
-
-```
-
-3. Run the transcriber:
-```
-
-python yt_transcriber.py
-
+```bash
+pip install --upgrade yt-dlp
 ```
 
 ## Usage
 
 ### Interactive Mode
+
 Simply run the script and follow the prompts:
+
+```bash
+python yt_whisper_transcriber.py
 ```
-
-python yt_transcriber.py
-
-```
-
-### Step-by-Step Process
-1. **Enter YouTube URL** - Paste any YouTube video URL
-2. **Select Language** - Choose from Finnish, English, auto-detect, or specify custom
-3. **Choose Output Format** - Select your preferred output format
-4. **Wait for Processing** - The tool handles download, transcription, and saving automatically
 
 ### Supported Languages
-- **Auto-detect** - Automatically identifies the spoken language
-- **Predefined options** - Finnish, English
-- **Custom languages** - German (de), French (fr), Spanish (es), Italian (it), Portuguese (pt), Russian (ru), Japanese (ja), Korean (ko), Chinese (zh), Arabic (ar), Hindi (hi), and many more
+
+- **Auto-detect** - Automatically identifies the spoken language (not recommended)
+- **Predefined options** - Finnish (fi), English (en)
+- **Custom languages** - German (de), French (fr), Spanish (es), Italian (it), Portuguese (pt), Russian (ru), Japanese (ja), Korean (ko), Chinese (zh), and many more
+
 
 ## Output Formats
 
-### 1. Text with Timestamps
-```
+### 1. Text with Timestamps (Default)
 
+Includes metadata header and full text:
+
+```
+YouTube Transcription
+============================================================
+Title : Video Title Here
+Language : en
+Duration : 00:12:34
+Segments : 145
+Model : Whisper large-v3
+============================================================
+
+TIMESTAMPS
+----------------------------------------
 [00:00:15 → 00:00:18] Welcome to this tutorial video
 [00:00:18 → 00:00:22] Today we'll be learning about Python
 
+============================================================
+FULL TEXT
+----------------------------------------
+Welcome to this tutorial video. Today we'll be learning about Python...
 ```
+
 
 ### 2. Plain Text
-```
 
+```
 Welcome to this tutorial video. Today we'll be learning about Python...
-
 ```
+
 
 ### 3. JSON Format
+
+```json
+{
+  "title": "Video Title",
+  "language": "en",
+  "duration": 754.5,
+  "model": "whisper-large-v3",
+  "segments": [
+    {
+      "start": 15.0,
+      "end": 18.0,
+      "text": "Welcome to this tutorial video"
+    },
+    {
+      "start": 18.0,
+      "end": 22.0,
+      "text": "Today we'll be learning about Python"
+    }
+  ],
+  "full_text": "Welcome to this tutorial video. Today we'll be learning about Python..."
+}
 ```
 
-{
-"title": "Video Title",
-"language": "en",
-"duration": 1234.5,
-"segments": [
-{
-"start": 15.0,
-"end": 18.0,
-"text": "Welcome to this tutorial video"
-}
-]
-}
-
-```
 
 ### 4. SRT Subtitles
-```
 
+```
 1
 00:00:15,000 --> 00:00:18,000
 Welcome to this tutorial video
@@ -117,71 +112,101 @@ Welcome to this tutorial video
 2
 00:00:18,000 --> 00:00:22,000
 Today we'll be learning about Python
-
 ```
+
 
 ## System Optimization
 
-The tool automatically optimizes settings based on your system:
+The tool automatically optimizes settings based on your system resources:
 
-| RAM Available | Beam Size | Compute Type | Batch Size |
-|---------------|-----------|--------------|------------|
-| 16GB+         | 5         | float16/int8 | 8          |
-| 8GB-16GB      | 3         | int8         | 4          |
-| <8GB          | 1         | int8         | 2          |
+
+| RAM Available | Beam Size | Compute Type | Batch Size | GPU Support |
+| :-- | :-- | :-- | :-- | :-- |
+| 16GB+ | 5 | float16/int8* | 8 | Yes (CUDA) |
+| 8GB-16GB | 3 | int8 | 4 | CPU only |
+| <8GB | 1 | int8 | 2 | CPU only |
+
+*Uses float16 if GPU available, int8 otherwise
+
+## Advanced Configuration
+
+### Model Cache
+
+Models are automatically downloaded to a `models/` directory in the script location. This allows offline use after initial download.
+
+### VAD (Voice Activity Detection)
+
+The transcriber uses enhanced VAD to skip silence:
+
+- **Min silence duration**: 500ms (skips short pauses)
+- **Speech padding**: 300ms (includes natural speech boundaries)
+- **Max speech duration**: 30 seconds per segment
+
+
+### SponsorBlock Integration
+
+Automatically skips known sponsor segments during YouTube download. https://github.com/ajayyy/SponsorBlock
+
 
 ## Troubleshooting
 
 ### Common Issues
 
 **"Cannot access video"**
+
 - Verify the YouTube URL is correct and accessible
 - Check your internet connection
-- Some videos may be region-restricted
+- Some videos may be region-restricted or age-gated
 
 **"Audio validation failed"**
-- The video may not contain audio
+
+- The video may not contain audio or has insufficient audio duration
 - Audio quality might be too low (<8kHz sample rate)
+- Maximum audio length is 4 hours
 - Try a different video
 
 **"High memory usage warning"**
+
 - Close other applications to free up RAM
-- The tool will automatically use lower quality settings on systems with limited memory
+- The tool automatically adapts beam size and batch size for your available memory
+- Consider using a system with more RAM for faster processing
 
 **"Model loading failed"**
-- Ensure you have sufficient disk space for the Whisper model
+
+- Ensure you have at least 2GB free disk space for the Whisper large-v3 model (~3GB)
 - Check internet connection for initial model download
-- The tool will automatically fallback to a smaller model if needed
+- The tool automatically falls back to the base model if large-v3 fails
+- Clear the `models/` directory if corrupt and restart
+
+**"No speech detected"**
+
+- The video may contain only music or background noise
+- Try adjusting the VAD sensitivity (currently optimized for standard speech)
+
 
 ### Performance Tips
-- **Use GPU** - Install CUDA-compatible PyTorch for faster processing
-- **Choose appropriate language** - Specifying language is faster than auto-detection
+
+- **Use GPU** - Install CUDA-compatible PyTorch for 5-10x faster processing
+- **Specify language** - Explicitly choosing language is ~20% faster than auto-detection
+- **Close background apps** - Frees RAM for larger batch sizes and beam search
+- **Use timestamps format** - Fastest format to save (less processing than JSON)
+
 
 ## Technical Details
 
-- **Model**: OpenAI Whisper large-v3 (universal language model)
-- **Audio Processing**: Automatic VAD (Voice Activity Detection)
-- **Session Management**: Automatic cleanup with resume capability
-- **Memory Management**: Dynamic resource allocation based on system capabilities
+- **Model**: OpenAI Whisper large-v3 (universal multilingual model)
+- **Backend**: faster-whisper (optimized C++ implementation)
+- **Audio Extraction**: yt-dlp with SponsorBlock support
+- **Audio Processing**: Librosa for validation and sample rate detection
+- **Voice Activity Detection**: faster-whisper built-in VAD with custom parameters
+- **Session Persistence**: JSON-based resume files in system temp directory
+- **Memory Management**: Real-time psutil monitoring with dynamic resource allocation
 
-## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- OpenAI for the Whisper model
-- faster-whisper for the optimized implementation
-- yt-dlp for YouTube audio extraction
-
----
+***
 
 **Note**: This tool is for educational and personal use. Please respect YouTube's terms of service and copyright laws when using this tool.
+
+
+
